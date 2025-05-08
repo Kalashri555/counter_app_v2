@@ -1,30 +1,73 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./homepage";
-import ResultPage from "./resultpage";
+import CounterDisplay from "./CounterDisplay";
 
 function App() {
-  const [count, setCount] = useState(0); // Total count
-  const [action, setAction] = useState(""); // 'Added' or 'Removed'
-  const [value, setValue] = useState(0); // What number was added/removed
+  const [inputValue, setInputValue] = useState("");
+  const [count, setCount] = useState(null); 
+  const [initialSet, setInitialSet] = useState(false); 
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    setInitialSet(false); // reset if new input
+    setCount(null);
+  };
+
+  const applyInitialValueIfNeeded = () => {
+    if (!initialSet && inputValue !== "") {
+      setCount(Number(inputValue));
+      setInitialSet(true);
+      return Number(inputValue);
+    }
+    return count;
+  };
+
+  const handleIncrease = () => {
+    const base = applyInitialValueIfNeeded();
+    if (initialSet) setCount(base + 1);
+  };
+
+  const handleDecrease = () => {
+    const base = applyInitialValueIfNeeded();
+    if (initialSet) setCount(base - 1);
+  };
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage count={count} setCount={setCount} setAction={setAction}
-              setValue={setValue}
-            />
-          }
-        />
-        <Route
-          path="/result"
-          element={<ResultPage action={action} value={value} count={count} />}
-        />
-      </Routes>
-    </Router>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h2>Enter the number</h2>
+
+      <input
+        type="number"
+        placeholder="Enter starting value"
+        value={inputValue}
+        onChange={handleInputChange}
+        style={{ padding: "10px", fontSize: "16px" }}
+      />
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "60vh",
+        }}
+      >
+        <button
+          onClick={handleIncrease}
+          style={{ marginRight: "300px", fontSize: "30px" }}
+        >
+          <span className="material-symbols-outlined">⬆️Increase</span>
+        </button>
+
+        {count !== null && <CounterDisplay value={count} />}
+
+        <button
+          onClick={handleDecrease}
+          style={{ marginLeft: "300px", fontSize: "30px" }}
+        >
+          <span className="material-symbols-outlined">⬇️Decrease</span>
+        </button>
+      </div>
+    </div>
   );
 }
 
